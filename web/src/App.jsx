@@ -11,7 +11,11 @@ export function App() {
     getData();
   }, []);
   const getData = async () => {
-    const data = await (await fetch('/repos')).json();
+    const data = (await (await fetch('/repos')).json()).sort((a, b) => {
+      const date_a = new Date(a.created_at).getTime();
+      const date_b = new Date(b.created_at).getTime();
+      return date_b - date_a;
+    });
     const newRepos = data.map((repo) => {
       return {
         name: repo.name || 'No name specified',
