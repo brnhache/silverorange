@@ -8,7 +8,7 @@ repos.get('/', async (_: Request, res: Response) => {
   res.header('Cache-Control', 'no-store');
   res.status(200);
   
-  //Grab repo data
+  //Grab repo data, only return items where fork is true.
   try{
     let data = [ 
       ...JSON.parse(fs.readFileSync('./data/repos.json').toString()), //Local File
