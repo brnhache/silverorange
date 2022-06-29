@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import axios from 'axios';
 
 export const repos = Router();
 
@@ -7,6 +8,12 @@ repos.get('/', async (_: Request, res: Response) => {
 
   res.status(200);
 
-  // TODO: See README.md Task (A). Return repo data here. You’ve got this!
-  res.json([]);
+  try{
+    let data = await (await axios.get('https://api.github.com/users/silverorange/repos')).data;
+    res.json(data);
+  }catch(error){
+    if(error instanceof Error){
+      console.log(error.message)
+    }
+  }
 });
