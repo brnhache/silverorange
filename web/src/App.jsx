@@ -88,10 +88,18 @@ export function App() {
         `https://raw.githubusercontent.com/${selectedRepo.full_name}/master/README.md`
       )
     ).text();
+    const _details = await (
+      await fetch(
+        `${selectedRepo.commits_url.slice(0, -6)}/${
+          selectedRepo.default_branch
+        }`
+      )
+    ).json();
+    console.log('here', _details.commit);
     setRepoDetails({
-      latestCommitDate: 'date',
-      latestCommitAuthor: 'author',
-      latestCommitMessage: 'message',
+      latestCommitDate: _details.commit.author.date,
+      latestCommitAuthor: _details.commit.author.name,
+      latestCommitMessage: _details.commit.message,
       readMe: _readMe,
     });
     setShowRepoDetails(true);
@@ -154,7 +162,17 @@ export function App() {
         <Modal.Header>
           <Modal.Title>Repo Details</Modal.Title>
         </Modal.Header>
+        <Modal.Header>
+          <Modal.Title>Date: {repoDetails.latestCommitDate}</Modal.Title>
+        </Modal.Header>
+        <Modal.Header>
+          <Modal.Title>Name: {repoDetails.latestCommitAuthor}</Modal.Title>
+        </Modal.Header>
+        <Modal.Header>
+          <Modal.Title>Message: {repoDetails.latestCommitMessage}</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
+          <Modal.Title>ReadMe.md:</Modal.Title>
           <ReactMarkdown>{repoDetails.readMe}</ReactMarkdown>
         </Modal.Body>
         <Modal.Footer>
