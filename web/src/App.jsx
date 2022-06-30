@@ -7,9 +7,11 @@ import { Container, ListGroup, Toast, Navbar, Button } from 'react-bootstrap';
 
 export function App() {
   const [repos, setRepos] = useState([]);
+  const [renderedRepos, setRenderedRepos] = useState([]);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [toastError, setToastError] = useState('');
   const [languages, setLanguages] = useState([]);
+
   useEffect(() => {
     const getData = async () => {
       let data = await fetch('/repos');
@@ -28,6 +30,7 @@ export function App() {
           };
         });
         setRepos(newRepos);
+        setRenderedRepos(newRepos);
         //Collect all of the languages
         const _languages = [];
         newRepos.forEach((repo) => {
@@ -44,7 +47,11 @@ export function App() {
   }, []);
 
   const filterByLanguage = (lang) => {
-    // const filteredRepos = repos.
+    setRenderedRepos(repos);
+    if (lang !== 'remove') {
+      const filteredRepos = repos.filter((repo) => repo.language === lang);
+      setRenderedRepos(filteredRepos);
+    }
   };
 
   const openShowErrorToast = async (error) => {
@@ -66,15 +73,14 @@ export function App() {
           <Navbar.Brand href="#home">Filter by language:</Navbar.Brand>
           {languages.map((lang, idx) => {
             return (
-              <Button
-                onClick={() => filterByLanguage(lang)}
-                key={idx}
-              >
+              <Button onClick={() => filterByLanguage(lang)} key={idx}>
                 {lang}
               </Button>
             );
           })}
-          <Button>Remove Filter</Button>
+          <Button onClick={() => filterByLanguage('remove')}>
+            Remove Filter
+          </Button>
         </Container>
       </Navbar>
       <Toast show={showErrorToast} onClose={() => setShowErrorToast(false)}>
@@ -85,7 +91,7 @@ export function App() {
       </Toast>
       <Container>
         <ListGroup>
-          {repos.map((repo, idx) => {
+          {renderedRepos.map((repo, idx) => {
             return (
               <ListGroup.Item className="Repo-item" variant="dark" key={idx}>
                 <h3>Repo Name: {repo.name}</h3>
