@@ -3,33 +3,51 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Container, ListGroup } from 'react-bootstrap';
+import { Container, ListGroup, Toast } from 'react-bootstrap';
 
 export function App() {
   const [repos, setRepos] = useState([]);
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [toastError, setToastError] = useState('');
   useEffect(() => {
+    const getData = async () => {
+      let data = await fetch('/repos');
+      if (data.ok) {
+        data = (await data.json()).sort((a, b) => {
+          const date_a = new Date(a.created_at).getTime();
+          const date_b = new Date(b.created_at).getTime();
+          return date_b - date_a;
+        });
+        const newRepos = data.map((repo) => {
+          return {
+            name: repo.name || 'No name specified',
+            description: repo.description || 'No description specified',
+            language: repo.language || 'No language specified',
+            forkCount: repo.forks_count,
+          };
+        });
+        setRepos(newRepos);
+      } else {
+        openShowErrorToast(data);
+      }
+    };
     getData();
   }, []);
-  const getData = async () => {
-    const data = (await (await fetch('/repos')).json()).sort((a, b) => {
-      const date_a = new Date(a.created_at).getTime();
-      const date_b = new Date(b.created_at).getTime();
-      return date_b - date_a;
-    });
-    const newRepos = data.map((repo) => {
-      return {
-        name: repo.name || 'No name specified',
-        description: repo.description || 'No description specified',
-        language: repo.language || 'No language specified',
-        forkCount: repo.forks_count,
-      };
-    });
-    setRepos(newRepos);
+
+  const openShowErrorToast = async (error) => {
+    setToastError(await error.json());
+    setShowErrorToast(true);
   };
 
   return (
     <div className="App">
       <h1 className="mb-4, App-header">Silverorange Coding Exercise</h1>
+      <Toast show={showErrorToast} onClose={() => setShowErrorToast(false)}>
+        <Toast.Header>
+          <strong className="me-auto">{toastError.status}</strong>
+        </Toast.Header>
+        <Toast.Body>{toastError.message}</Toast.Body>
+      </Toast>
       <Container>
         <ListGroup>
           {repos.map((repo, idx) => {
