@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -21,10 +22,10 @@ export function App() {
   const [languages, setLanguages] = useState([]);
   const [showRepoDetails, setShowRepoDetails] = useState(false);
   const [repoDetails, setRepoDetails] = useState({
-    latestCommitDate: 't',
-    latestCommitAuthor: 't',
-    latestCommitMessage: 't',
-    readMe: 't',
+    latestCommitDate: '',
+    latestCommitAuthor: '',
+    latestCommitMessage: '',
+    readMe: '',
   });
 
   useEffect(() => {
@@ -81,12 +82,17 @@ export function App() {
     if (showRepoDetails) {
       return;
     }
-    // const selectedRepo = data.find((repo) => (repo.id = repo_id));
+    const selectedRepo = data.find((repo) => (repo.id = repo_id));
+    const _readMe = await (
+      await fetch(
+        `https://raw.githubusercontent.com/${selectedRepo.full_name}/master/README.md`
+      )
+    ).text();
     setRepoDetails({
       latestCommitDate: 'date',
       latestCommitAuthor: 'author',
       latestCommitMessage: 'message',
-      readMe: '<h1>Helloooooo Readme</h1>',
+      readMe: _readMe,
     });
     setShowRepoDetails(true);
   };
@@ -140,20 +146,21 @@ export function App() {
           })}
         </ListGroup>
       </Container>
-      <Modal show={showRepoDetails} onHide={() => setShowRepoDetails(false)}>
+      <Modal
+        show={showRepoDetails}
+        onHide={() => setShowRepoDetails(false)}
+        dialogClassName="modal-90w"
+      >
         <Modal.Header>
-          <Modal.Title>Repo Deatils</Modal.Title>
+          <Modal.Title>Repo Details</Modal.Title>
         </Modal.Header>
-        {repoDetails.readMe.length > 0 && (
-          <Modal.Body>{repoDetails.readMe}</Modal.Body>
-        )}
+        <Modal.Body>
+          <ReactMarkdown>{repoDetails.readMe}</ReactMarkdown>
+        </Modal.Body>
         <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => setShowRepoDetails(false)}
-            >
-              Close
-            </Button>
+          <Button variant="secondary" onClick={() => setShowRepoDetails(false)}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
