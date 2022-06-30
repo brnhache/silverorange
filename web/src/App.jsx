@@ -160,7 +160,9 @@ export function App() {
         dialogClassName="modal-90w"
       >
         <Modal.Header>
-          <Modal.Title>Repo Details</Modal.Title>
+          <Modal.Title style={{ fontSize: '40px' }}>
+            Latest Commit Details
+          </Modal.Title>
         </Modal.Header>
         <Modal.Header>
           <Modal.Title>Date: {repoDetails.latestCommitDate}</Modal.Title>
