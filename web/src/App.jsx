@@ -3,12 +3,13 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Container, ListGroup, Toast } from 'react-bootstrap';
+import { Container, ListGroup, Toast, Navbar, Button } from 'react-bootstrap';
 
 export function App() {
   const [repos, setRepos] = useState([]);
   const [showErrorToast, setShowErrorToast] = useState(false);
   const [toastError, setToastError] = useState('');
+  const [languages, setLanguages] = useState([]);
   useEffect(() => {
     const getData = async () => {
       let data = await fetch('/repos');
@@ -27,12 +28,24 @@ export function App() {
           };
         });
         setRepos(newRepos);
+        //Collect all of the languages
+        const _languages = [];
+        newRepos.forEach((repo) => {
+          if (repo.language && !_languages.includes(repo.language)) {
+            _languages.push(repo.language);
+          }
+        });
+        setLanguages((l) => _languages);
       } else {
         openShowErrorToast(data);
       }
     };
     getData();
   }, []);
+
+  const filterByLanguage = (lang) => {
+    // const filteredRepos = repos.
+  };
 
   const openShowErrorToast = async (error) => {
     setToastError(await error.json());
@@ -42,6 +55,28 @@ export function App() {
   return (
     <div className="App">
       <h1 className="mb-4, App-header">Silverorange Coding Exercise</h1>
+      <Navbar
+        style={{
+          backgroundColor: '#0f74ac',
+          width: '100%',
+          borderRadius: '.5rem',
+        }}
+      >
+        <Container>
+          <Navbar.Brand href="#home">Filter by language:</Navbar.Brand>
+          {languages.map((lang, idx) => {
+            return (
+              <Button
+                onClick={() => filterByLanguage(lang)}
+                key={idx}
+              >
+                {lang}
+              </Button>
+            );
+          })}
+          <Button>Remove Filter</Button>
+        </Container>
+      </Navbar>
       <Toast show={showErrorToast} onClose={() => setShowErrorToast(false)}>
         <Toast.Header>
           <strong className="me-auto">{toastError.status}</strong>
