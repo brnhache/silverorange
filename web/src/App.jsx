@@ -113,6 +113,7 @@ export function App() {
           backgroundColor: '#0f74ac',
           width: '100%',
           borderRadius: '.5rem',
+          marginBottom: '5px',
         }}
       >
         <Container>
