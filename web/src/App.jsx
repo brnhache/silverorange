@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 import './App.css';
@@ -70,7 +70,6 @@ export function App() {
       const filteredRepos = repos.filter((repo) => repo.language === lang);
       setRenderedRepos(filteredRepos);
     }
-    console.log(data);
   };
 
   const openShowErrorToast = async (error) => {
@@ -82,12 +81,14 @@ export function App() {
     if (showRepoDetails) {
       return;
     }
+    //Get the entire repo object to pull out some more attributes
     const selectedRepo = data.find((repo) => (repo.id = repo_id));
     const _readMe = await (
       await fetch(
         `https://raw.githubusercontent.com/${selectedRepo.full_name}/master/README.md`
       )
     ).text();
+    //Had to make a new fetch call to find what I hope is the latest commit data
     const _details = await (
       await fetch(
         `${selectedRepo.commits_url.slice(0, -6)}/${
@@ -95,7 +96,6 @@ export function App() {
         }`
       )
     ).json();
-    console.log('here', _details.commit);
     setRepoDetails({
       latestCommitDate: _details.commit.author.date,
       latestCommitAuthor: _details.commit.author.name,
@@ -105,6 +105,7 @@ export function App() {
     setShowRepoDetails(true);
   };
 
+  //Normally I would want to separate the modal and the navbar if this were a slightly larger application
   return (
     <div className="App">
       <h1 className="mb-4, App-header">Silverorange Coding Exercise</h1>
